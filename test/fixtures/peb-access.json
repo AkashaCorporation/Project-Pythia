@@ -1,0 +1,58 @@
+{
+  "kind": "decision_request",
+  "eventId": "evt_fixture_peb_001",
+  "trigger": {
+    "kind": "peb_access",
+    "value": "0x140001b80",
+    "reason": "PEB BeingDebugged read at gs:[0x60]+0x02"
+  },
+  "context": {
+    "registers": {
+      "rax": "0x0000000000000001",
+      "rbx": "0x00007FFE0000C0E0",
+      "rcx": "0x0000000000000000",
+      "rdx": "0x0000000000000000",
+      "rsi": "0x0000000000000000",
+      "rdi": "0x0000000000000000",
+      "rbp": "0x000000000018FE00",
+      "rsp": "0x000000000018FDD8",
+      "r8":  "0x0000000000000000",
+      "r9":  "0x0000000000000000",
+      "r10": "0x0000000000000000",
+      "r11": "0x0000000000000000",
+      "r12": "0x0000000000000000",
+      "r13": "0x0000000000000000",
+      "r14": "0x0000000000000000",
+      "r15": "0x0000000000000000",
+      "rip": "0x0000000140001B80",
+      "rflags": "0x0000000000000246",
+      "gs_base": "0x000000007FFE0000"
+    },
+    "disassembly": [
+      { "address": "0x140001b70", "bytes": "65488b042560000000", "mnemonic": "mov",  "operands": "rax, gs:[0x60]" },
+      { "address": "0x140001b79", "bytes": "b81e000000",         "mnemonic": "mov",  "operands": "eax, 0x1e" },
+      { "address": "0x140001b7e", "bytes": "4829c1",             "mnemonic": "sub",  "operands": "rcx, rax" },
+      { "address": "0x140001b80", "bytes": "0fb64802",           "mnemonic": "movzx","operands": "ecx, byte ptr [rax+0x2]" },
+      { "address": "0x140001b84", "bytes": "85c9",               "mnemonic": "test", "operands": "ecx, ecx" },
+      { "address": "0x140001b86", "bytes": "0f8520000000",       "mnemonic": "jne",  "operands": "0x140001bac" },
+      { "address": "0x140001b8c", "bytes": "b800000000",         "mnemonic": "mov",  "operands": "eax, 0x0" },
+      { "address": "0x140001b91", "bytes": "c3",                 "mnemonic": "ret",  "operands": "" }
+    ],
+    "callStack": [
+      { "address": "0x140001b70", "symbol": "sv_t3", "module": "Malware HexCore Defeat.exe" },
+      { "address": "0x140001c10", "symbol": "sv_honey", "module": "Malware HexCore Defeat.exe" },
+      { "address": "0x140001cd0", "symbol": "hc_entry", "module": "Malware HexCore Defeat.exe" }
+    ],
+    "memoryWindow": {
+      "base": "0x140001b80",
+      "bytes": "0fb6480285c90f85200000 00b800000000c3"
+    }
+  },
+  "session": {
+    "sessionId": "sess_hack_2026_04_21_002",
+    "instructionsExecuted": 4812,
+    "apisCalled": ["QueryPerformanceCounter", "QueryPerformanceCounter", "GetTickCount"],
+    "elapsedMs": 124,
+    "pauseCount": 2
+  }
+}

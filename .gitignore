@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.log
+.env
+.env.local
+*.tsbuildinfo
+.DS_Store
+# Local traces from oracle sessions
+sessions/
+traces/
+*.drcov
+# IDE
+.vscode/
+.idea/

@@ -1,0 +1,61 @@
+{
+  "kind": "decision_request",
+  "eventId": "evt_fixture_timing_001",
+  "trigger": {
+    "kind": "timing_check",
+    "value": "0x140001a3f",
+    "reason": "QueryPerformanceCounter delta compared against 500000 (timing anti-debug heuristic)"
+  },
+  "context": {
+    "registers": {
+      "rax": "0x000000000000F420",
+      "rbx": "0x0000000000000000",
+      "rcx": "0x000000000018FE00",
+      "rdx": "0x0000000000000000",
+      "rsi": "0x0000000000000000",
+      "rdi": "0x0000000000000000",
+      "rbp": "0x000000000018FE20",
+      "rsp": "0x000000000018FDF8",
+      "r8":  "0x0000000000000000",
+      "r9":  "0x0000000000000000",
+      "r10": "0x0000000000000000",
+      "r11": "0x0000000000000000",
+      "r12": "0x0000000000000000",
+      "r13": "0x0000000000000000",
+      "r14": "0x0000000000000000",
+      "r15": "0x0000000000000000",
+      "rip": "0x0000000140001A3F",
+      "rflags": "0x0000000000000246",
+      "gs_base": "0x000000007FFE0000"
+    },
+    "disassembly": [
+      { "address": "0x140001a20", "bytes": "488d4c2418",       "mnemonic": "lea",  "operands": "rcx, [rsp+0x18]" },
+      { "address": "0x140001a25", "bytes": "ff15d5050000",     "mnemonic": "call", "operands": "qword ptr [rip+0x5d5]" },
+      { "address": "0x140001a2b", "bytes": "488b442418",       "mnemonic": "mov",  "operands": "rax, [rsp+0x18]" },
+      { "address": "0x140001a30", "bytes": "482bc3",           "mnemonic": "sub",  "operands": "rax, rbx" },
+      { "address": "0x140001a33", "bytes": "4883f800",         "mnemonic": "cmp",  "operands": "rax, 0x0" },
+      { "address": "0x140001a37", "bytes": "7c06",             "mnemonic": "jl",   "operands": "0x140001a3f" },
+      { "address": "0x140001a39", "bytes": "483d20a10700",     "mnemonic": "cmp",  "operands": "rax, 0x7a120" },
+      { "address": "0x140001a3f", "bytes": "7f0a",             "mnemonic": "jg",   "operands": "0x140001a4b" },
+      { "address": "0x140001a41", "bytes": "b801000000",       "mnemonic": "mov",  "operands": "eax, 0x1" },
+      { "address": "0x140001a46", "bytes": "e900000000",       "mnemonic": "jmp",  "operands": "0x140001a4b" },
+      { "address": "0x140001a4b", "bytes": "c3",               "mnemonic": "ret",  "operands": "" }
+    ],
+    "callStack": [
+      { "address": "0x140001a25", "symbol": "sv_t1", "module": "Malware HexCore Defeat.exe" },
+      { "address": "0x140001b60", "symbol": "sv_honey", "module": "Malware HexCore Defeat.exe" },
+      { "address": "0x140001c10", "symbol": "hc_entry", "module": "Malware HexCore Defeat.exe" }
+    ],
+    "memoryWindow": {
+      "base": "0x140001a30",
+      "bytes": "482bc34883f8007c06483d20a107007f0ab801000000e900000000c3"
+    }
+  },
+  "session": {
+    "sessionId": "sess_hack_2026_04_21_001",
+    "instructionsExecuted": 2314,
+    "apisCalled": ["QueryPerformanceCounter", "QueryPerformanceCounter"],
+    "elapsedMs": 87,
+    "pauseCount": 1
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "kind": "decision_request",
+  "eventId": "evt_fixture_exc_001",
+  "trigger": {
+    "kind": "exception",
+    "value": "UC_ERR_READ_UNMAPPED",
+    "reason": "emulator attempted to read from unmapped memory at 0x7FFF00000000"
+  },
+  "context": {
+    "registers": {
+      "rax": "0x00007FFF00000000",
+      "rbx": "0x0000000000000000",
+      "rcx": "0x0000000000000000",
+      "rdx": "0x0000000000000000",
+      "rsi": "0x0000000000000000",
+      "rdi": "0x0000000000000000",
+      "rbp": "0x000000000018FE00",
+      "rsp": "0x000000000018FDE0",
+      "r8":  "0x0000000000000000",
+      "r9":  "0x0000000000000000",
+      "r10": "0x0000000000000000",
+      "r11": "0x0000000000000000",
+      "r12": "0x0000000000000000",
+      "r13": "0x0000000000000000",
+      "r14": "0x0000000000000000",
+      "r15": "0x0000000000000000",
+      "rip": "0x0000000140002000",
+      "rflags": "0x0000000000000246",
+      "gs_base": "0x000000007FFE0000"
+    },
+    "disassembly": [
+      { "address": "0x140002000", "bytes": "488b00",  "mnemonic": "mov",  "operands": "rax, [rax]" },
+      { "address": "0x140002003", "bytes": "c3",      "mnemonic": "ret",  "operands": "" }
+    ],
+    "callStack": [
+      { "address": "0x140002000", "module": "Malware HexCore Defeat.exe" }
+    ],
+    "memoryWindow": {
+      "base": "0x140002000",
+      "bytes": "488b00c3"
+    }
+  },
+  "session": {
+    "sessionId": "sess_hack_2026_04_21_004",
+    "instructionsExecuted": 9421,
+    "apisCalled": ["QueryPerformanceCounter", "QueryPerformanceCounter"],
+    "elapsedMs": 273,
+    "pauseCount": 1
+  }
+}
