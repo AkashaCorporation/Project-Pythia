@@ -19,7 +19,7 @@ export const MODEL_IDS = {
 export const PRICING_USD_PER_MTOK = {
   haiku:  { input: 1.00,  output: 5.00  },
   sonnet: { input: 3.00,  output: 15.00 },
-  opus:   { input: 15.00, output: 75.00 },
+  opus:   { input: 5.00,  output: 25.00 },
 } as const;
 
 export interface ModelRouteHint {

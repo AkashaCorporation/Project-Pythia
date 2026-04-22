@@ -153,7 +153,11 @@ export type DecisionResponse = z.infer<typeof DecisionResponseSchema>;
 // These do NOT resume emulation; execution stays paused until a DecisionResponse.
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const ToolCallSchema = z.discriminatedUnion("tool", [
+// Zod v3 disallows nesting a discriminatedUnion as a branch of another
+// discriminatedUnion (the outer is OracleMessageSchema on `kind`). z.union
+// is semantically equivalent here: runtime validation still checks every
+// branch, we just lose the inner fast-path discriminator on `tool`.
+export const ToolCallSchema = z.union([
   z.object({
     kind: z.literal("tool_call"),
     eventId: z.string(),
@@ -242,7 +246,11 @@ export type SessionEnd = z.infer<typeof SessionEndSchema>;
 // Top-level message envelope.
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const OracleMessageSchema = z.discriminatedUnion("kind", [
+// Outer envelope is z.union (not z.discriminatedUnion) because ToolCallSchema
+// is itself a union (Zod v3 cannot nest discriminated unions). Runtime
+// dispatch becomes O(branches) instead of O(1) on `kind`, but this fires
+// only once per inbound frame at the transport layer, not per hook.
+export const OracleMessageSchema = z.union([
   HandshakeSchema,
   DecisionRequestSchema,
   DecisionResponseSchema,

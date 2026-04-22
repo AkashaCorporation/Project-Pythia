@@ -199,6 +199,7 @@ export class Pythia {
 
     // Iteration cap exceeded — emergency fallthrough.
     this.log(`[pythia] iteration cap hit for eventId ${request.eventId}; continuing`);
+    this.stats.decisions++;
     return {
       kind: "decision_response",
       eventId: request.eventId,
@@ -277,12 +278,14 @@ export class Pythia {
     if (match) {
       try {
         const parsed = JSON.parse(match[0]);
+        this.stats.decisions++;
         return this.buildDecisionResponse(req, parsed, model, cost);
       } catch {
         // fallthrough
       }
     }
     this.log(`[pythia] text-only response, no parseable JSON; continuing`);
+    this.stats.decisions++;
     return {
       kind: "decision_response",
       eventId: req.eventId,

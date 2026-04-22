@@ -60,10 +60,17 @@ async function rehearse(scenario: string) {
   const request = JSON.parse(raw);
   const systemPromptPath = path.resolve(process.cwd(), "prompts/system.md");
 
-  const mockToolCall = async (call: ToolCall): Promise<ToolResult> => ({
+  // PythiaConfig.onToolCall receives the call without `kind`/`callId` — those
+  // are assigned by the oracle client at send time. The rehearsal mock fills
+  // a synthetic callId so the ToolResult shape stays well-formed, even though
+  // in rehearsal mode the mock is never actually invoked (no live API = no
+  // tool_use blocks to dispatch).
+  const mockToolCall = async (
+    call: Omit<ToolCall, "kind" | "callId">
+  ): Promise<ToolResult> => ({
     kind: "tool_result",
     eventId: call.eventId,
-    callId: call.callId,
+    callId: `mock-${Math.random().toString(36).slice(2, 10)}`,
     ok: true,
     data: { mock: true, tool: call.tool },
   });
