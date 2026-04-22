@@ -48,6 +48,28 @@ Pythia is a fourth path: **let a language model make the decisions**, in real ti
 
 ---
 
+## Validation — end-to-end beacon unlock
+
+The project was validated against two purpose-built red-team samples authored by the HexCore team. Each sample opens `https://github.com/AkashaCorporation` in the default browser via `ShellExecuteW` — but the URL is the last thing it does, after a chain of anti-analysis checks that must all pass.
+
+### v6.1 "Echo Mirage" — 9 evasion layers
+
+Zero API plaintexts (FNV-1a hashed), XOR-split FNV constants, arithmetic-derived PEB offsets, KUSER shared-data timing, removed `IsDebuggerPresent`, opaque predicates on every anti-debug branch, no `.rdata` debug strings, XOR-PRNG URL decoded on stack, opaque function labels. Compiled with `/NODEFAULTLIB /ENTRY:hc_entry` — no CRT, no mainCRTStartup, no incidental IAT leaks.
+
+**Pythia result:** 4 triggered decisions, ~$0.037 total cost, ~40 seconds end-to-end. Beacon URL `https://github.com/AkashaCorporation` surfaced via `read_memory` after the in-binary URL decoder ran. Canonical fixture: [`test/fixtures/azoth-beacon-demo.json`](./test/fixtures/azoth-beacon-demo.json).
+
+### v7.0 "Echo Echo" — v6.1 + three stressors aimed at the Oracle
+
+- **E10 — Runtime `.text` integrity baseline.** Hashes 128 bytes of a neighbouring function at entry, re-hashes before the URL decode, exits silently on mismatch. Fails against any engine that injects INT3 software breakpoints. HexCore's Oracle Hook uses native `UC_HOOK_CODE` (code bytes untouched) — passes silently.
+- **E11 — QueryPerformanceCounter tamper gate.** Captures QPC at entry and before decode, exits on delta < 50. Against Azoth's synthetic QPC stub (constant `0x1`), delta is zero → silent exit. Pythia handled this one on Sonnet by choosing the minimum-cost bypass (`action=skip` around the whole compare block) rather than patching the QPC output.
+- **E12 — Two-stage URL decoder with decoy.** `sv_url_partial` produces `http://127.0.0.1:31337/beacon/xyz.db` (decoy) on the stack; `sv_url_finalize` XORs a second mask to turn it into the real URL. An Oracle that pauses between the two calls reads the decoy. Pythia placed the `read_memory` trigger after the finalize call and explicitly noted *"confirmed stage-2 output, no decoy strings present"* in her decision reasoning.
+
+**Pythia result:** 5 triggered decisions, ~$0.081 total cost, ~46 seconds end-to-end. 3 Haiku pauses ($0.010 each) + 2 Sonnet escalations ($0.023 and $0.028) when the problem got subtle. Real beacon URL surfaced on first try, no manual intervention.
+
+Both samples live at [AkashaCorporationMalware](https://github.com/AkashaCorporation) and are reproducible end-to-end. See [HexCore branch `feature/oracle-hook-hackathon`](https://github.com/AkashaCorporation/HikariSystem-HexCore/tree/feature/oracle-hook-hackathon) for the runner (`scripts/pythia-azoth-run.mjs`) and the integration bridge.
+
+---
+
 ## Architecture (high level)
 
 ```
@@ -91,16 +113,16 @@ See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for the full protocol spec, tool set 
 
 ## Status
 
-This repository is **scaffolded, not yet wired live**. The goals for the hackathon week:
+End-to-end pipeline is **live** and validated against both red-team samples above. Hackathon week progress:
 
-| Day | Target |
-|---|---|
-| Tue Apr 21 | Protocol spec, agent scaffold, HexCore branch plan (this commit) |
-| Wed Apr 22 | HexCore `feature/oracle-hook-hackathon` — trigger registry + pause/resume plumbing |
-| Thu Apr 23 | SharedArrayBuffer transport + stdio NDJSON transport, end-to-end handshake |
-| Fri Apr 24 | Claude Agent SDK integration, live decide() loop, first real bypass demo |
-| Sat Apr 25 | Tool set fleshed out (read_memory, disassemble, query_helix, search_hql) |
-| Sun Apr 26 | Full demo run: Pythia vs. `Malware HexCore Defeat v6.1` + fresh MalwareBazaar sample. Submission. |
+| Day | Target | Status |
+|---|---|---|
+| Tue Apr 21 | Protocol spec, agent scaffold, HexCore branch plan | ✅ done |
+| Wed Apr 22 | HexCore `feature/oracle-hook-hackathon` — trigger registry + pause/resume plumbing | ✅ done |
+| Thu Apr 23 | stdio NDJSON transport, end-to-end handshake | ✅ done |
+| Fri Apr 24 | Claude Agent SDK integration, live decide() loop, first real bypass demo | ✅ done (v6.1 unlocked) |
+| Sat Apr 25 | Native breakpoint API in Elixir engine, Azoth pivot, stress test v7.0 | ✅ done (v7 unlocked on first try) |
+| Sun Apr 26 | README, demo recording, submission | ⏳ in progress |
 
 ---
 
