@@ -18,7 +18,7 @@ This file is a short, opinionated playbook for picking up Pythia development on 
 ## Environment setup
 
 ```bash
-cd C:\Users\Mazum\Desktop\HexCore-Oracle-Agent
+cd <path-to-this-repo-clone>
 npm install
 ```
 
@@ -78,7 +78,7 @@ Each should emit a `DecisionResponse` JSON on stdout and a one-line `[pythia] st
 
 Switch to the HexCore monorepo:
 ```
-C:\Users\Mazum\Desktop\vscode-main
+<path-to-your-HexCore-clone>
 ```
 
 Branch from `main` at `v3.8.0`:
@@ -92,7 +92,7 @@ Follow `HEXCORE_BRANCH_PLAN.md` in this repo. New files go in `extensions/hexcor
 
 ### Phase 4 — End-to-end demo (day 3-4)
 
-Target sample: `C:\Users\Mazum\Desktop\AkashaCorporationMalware\Malware HexCore Defeat\Malware HexCore Defeat.exe` (v6.1 Echo Mirage — a dummy that the user built specifically to evade HexCore v3.8.0).
+Target sample: the `Malware HexCore Defeat.exe` v6.1 "Echo Mirage" build — a dummy engineered specifically to evade HexCore v3.8.0. Kept in a private corpus repo; analysts supply their own path when invoking the runner.
 
 The demo must show:
 1. Baseline run of v6.1 against `hexcore.debug.emulateFullHeadless` — emulation trips anti-debug, sample exits, no beacon observed.
