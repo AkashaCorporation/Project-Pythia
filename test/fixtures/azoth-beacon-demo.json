@@ -1,0 +1,30 @@
+{
+  "_description": "Pythia/Azoth end-to-end beacon unlock demo. Four triggers placed at the Malware HexCore Defeat v6.1 'Echo Mirage' sample's FNV-hash import-resolution call sites. Pythia bypasses the anti-analysis hash resolvers (which fault inside Azoth's clean-room PE loader because its synthetic LDR has no FNV-compatible kernel32/shell32) and then reads the decoded beacon URL directly from the stack buffer after the in-binary URL decoder runs. Verified result: beaconUnlocked=true, beaconUrlsFromMemory=[\"https://github.com/AkashaCorporation\"], 4 pauses, ~$0.037, ~40s.",
+  "_usage": "Set sample/pythiaRepoPath/outDir for your environment, then: `node scripts/pythia-azoth-run.mjs --job test/fixtures/azoth-beacon-demo.json`",
+  "sample": "<REPLACE: absolute path to Malware HexCore Defeat.exe v6.1>",
+  "pythiaRepoPath": "<REPLACE: absolute path to HexCore-Oracle-Agent>",
+  "outDir": "<REPLACE: absolute output dir>",
+  "maxInstructions": 3000000,
+  "triggers": [
+    {
+      "kind": "instruction",
+      "value": "0x140001784",
+      "reason": "call 0x140001090 = sv_fnv_walk(PEB.LDR, H_kernel32=0x69d265fe6b1c110f). On Azoth this walk returns 0 because the synthetic LDR has no entry matching the FNV-1a hash. Next insn at 0x140001789 is `test rax,rax`, then `je 0x14000186d` at 0x14000178C jumps to ExitProcess on RAX=0. IMPORTANT: patching RAX at the je site does NOT help because ZF is set by the `test` before you pause. Recommended: patch_and_skip — set RAX=0x70000020 (GetTickCount stub, mapped & callable) and skip.untilAddress=0x140001789 so the `test` runs with the patched RAX producing ZF=0."
+    },
+    {
+      "kind": "instruction",
+      "value": "0x14000179F",
+      "reason": "call 0x140001250 = sv2_hash_resolver(RCX=kernel32_base, RDX=H_LoadLibraryA=0x69d265fe6b1c110f). sv2 walks a PE EAT starting at RCX; our RCX is the GetTickCount stub address (one RET byte, no PE header) → sv2 faults on unmapped memory. MUST skip this call. Recommended: patch_and_skip — set RAX=0x70000020 (keep the GetTickCount stub as a fake LoadLibraryA handle — a real RET-terminated stub in the mapped STUB region) and skip.untilAddress=0x1400017A4 so the `test rax,rax` at 0x1400017A4 sees a non-zero RAX and falls through."
+    },
+    {
+      "kind": "instruction",
+      "value": "0x1400017E2",
+      "reason": "call 0x140001250 = sv2_hash_resolver(RCX=shell32_handle, RDX=H_ShellExecuteW=0x2f813e953282fb89). Same fault pattern as previous sv2 call. Recommended: patch_and_skip — set RAX=0x70000020 (mapped stub) and skip.untilAddress=0x1400017E7. After the skip, `mov rbx,rax` at 0x1400017E7 will give RBX a non-zero value, `test rax,rax` at 0x1400017EA sets ZF=0, je at 0x1400017ED falls through, reaching the URL decoder call at 0x14000182B."
+    },
+    {
+      "kind": "instruction",
+      "value": "0x140001830",
+      "reason": "We just returned from `call 0x140001310` which is the URL decoder. The beacon URL has been written to the stack buffer that begins at [rsp+0x50]. The decoder emits a UTF-16 LE wide string (the sample later calls ShellExecuteW which takes LPCWSTR), so each character takes 2 bytes. NEXT STEP: use the `read_memory` tool to read 160 bytes starting at (RSP + 0x50) — read RSP from the register state first. Decode the UTF-16 LE bytes to ASCII (every other byte is 0x00) and report the complete URL in your reasoning field. This is THE demo moment: the analyst wants the full C2 beacon URL surfaced. After reporting it, action=abort to stop the session cleanly."
+    }
+  ]
+}
