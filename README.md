@@ -146,6 +146,30 @@ End-to-end pipeline is **live** and validated against both red-team samples abov
 
 ---
 
+## Limitations & future work
+
+  The Oracle Hook mechanism is sample-agnostic, but trigger placement
+  currently requires hand-authored job files. The demo against v6.1 and
+  v7.0 covers the most common anti-analysis families (hash-resolved
+  imports, PEB walks, timing checks, stack-decoded strings, multi-stage
+  decoders). Samples that fit those families would map onto the same
+  trigger patterns; samples with genuinely novel evasion mechanics need
+  either a new pattern in Pythia's library or additional tooling on the
+  HexCore side (loader coverage, devirtualization, syscall stubs).
+
+  Tested ground:
+  - x86_64 PE (Windows). 32-bit not tested.
+  - Azoth (clean-room) emulator path. Unicorn-with-real-DLLs path works
+    in principle but the trigger reasons assume the Azoth synthetic LDR.
+  - Samples up to ~3M instructions of emulation budget.
+
+  Roadmap (post-hackathon):
+  - Auto-locate triggers from disassembly (the Claude Desktop skill is a
+    first sketch of this — orchestrating Claude to identify call sites).
+  - ELF / Linux loader coverage (Project Azoth has the engine; the
+    Pythia bridge needs trivial extension).
+  - Pattern library packaged as reusable trigger templates.
+  - Pythia as a published npm package (@hexcore/pythia) — users only need to run `npm install` on HexCore, settings only ask for an API key, zero manual cloning.
 ## Quickstart (rehearsal mode — no API key)
 
 ```bash
