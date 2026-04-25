@@ -68,6 +68,26 @@ Zero API plaintexts (FNV-1a hashed), XOR-split FNV constants, arithmetic-derived
 
 Both samples live at [AkashaCorporationMalware](https://github.com/AkashaCorporation) and are reproducible end-to-end. See [HexCore branch `feature/oracle-hook-hackathon`](https://github.com/AkashaCorporation/HikariSystem-HexCore/tree/feature/oracle-hook-hackathon) for the runner (`scripts/pythia-azoth-run.mjs`) and the integration bridge.
 
+## A note on cost variation
+
+  The cost figures above are from a specific reference run on Apr 22, 2026.
+  Per-decision cost varies meaningfully between runs even on identical
+  triggers, driven by:
+
+  - **Prompt caching** — Anthropic's prompt cache gives ~90% discount on
+    reused system prompts. The first decision in a fresh session pays
+    full freight; subsequent decisions hit the cache. A run started cold
+    can cost up to ~3x more total than one that lands cache hits early.
+  - **Tool-use iterations** — Pythia may call `read_memory` or
+    `disassemble` once or several times before committing to a decision,
+    depending on what she finds. Each round-trip is a separate API call.
+  - **Output length** — model output is non-deterministic. The same
+    trigger can produce a 200-token reasoning or a 600-token one.
+
+  In practice cost has ranged from ~$0.003 to ~$0.15 for the v7 demo across
+  the runs I've measured. The mechanism is robust; the absolute number is
+  not.
+
 ---
 
 ## Architecture (high level)
