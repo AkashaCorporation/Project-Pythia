@@ -142,7 +142,7 @@ End-to-end pipeline is **live** and validated against both red-team samples abov
 | Thu Apr 23 | stdio NDJSON transport, end-to-end handshake | ✅ done |
 | Fri Apr 24 | Claude Agent SDK integration, live decide() loop, first real bypass demo | ✅ done (v6.1 unlocked) |
 | Sat Apr 25 | Native breakpoint API in Elixir engine, Azoth pivot, stress test v7.0 | ✅ done (v7 unlocked on first try) |
-| Sun Apr 26 | README, demo recording, submission | ⏳ in progress |
+| Sun Apr 26 | README, demo recording, submission | ✅ done |
 
 ---
 
@@ -156,7 +156,18 @@ npx pythia rehearse --scenario timing-check
 
 Rehearsal runs a deterministic stub decision against a fixture. Used to validate the HexCore oracle plumbing before the live agent is wired. See [`ARCHITECTURE.md`](./ARCHITECTURE.md) for how to switch into live mode once the API key is set.
 
+## Quickstart (live mode — full demo)
+
+  ```bash
+  echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
+  npm install
+  npm run build
+  node ../vscode-main/scripts/pythia-azoth-run.mjs \
+    --job test/fixtures/azoth-beacon-demo.json
+
+  Drives the full Apr 22 demo against the v6.1 sample. Expect ~40s, ~$0.04, and a beacon URL surfaced from emulator memory.
 ---
+```
 
 ## License
 
